@@ -1,10 +1,10 @@
 import signal
 from PyQt6.QtCore import QDateTime, Qt, QTimer, QCoreApplication
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
-        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget, QStackedWidget, QPlainTextEdit)
+                             QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+                             QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
+                             QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
+                             QVBoxLayout, QWidget, QStackedWidget, QPlainTextEdit)
 import sys
 import copy
 import datetime
@@ -44,6 +44,7 @@ def main():
         keylogger.join()
         observer.join()
 
+
 def test_GUI():
     message = list()
     run_gui(message)
@@ -67,7 +68,7 @@ class Keylogger:
         # Shared var
         self.message = message
         self.shared_call_time = call_time
-        self.shared_call_time = [time.time()-60, time.time()-60, time.time()-60, time.time()-60]
+        self.shared_call_time = [time.time() - 60, time.time() - 60, time.time() - 60, time.time() - 60]
         self.shared_group_count = group_count
         self.shared_group_count = [1, 1, 1, 1]
         self.shared_toggle = toggle
@@ -109,7 +110,6 @@ class Keylogger:
             self.petconfig["PET_3_GROUP"],
             self.petconfig["PET_4_GROUP"],
         ]
-        print(self.conf_pet_group_key[0]["PET_2"])
         self.conf_pet_group_key_2 = self.petconfig["PET_2_GROUP"]
         self.conf_pet_group_key_3 = self.petconfig["PET_3_GROUP"]
         self.conf_pet_group_key_4 = self.petconfig["PET_4_GROUP"]
@@ -134,7 +134,6 @@ class Keylogger:
             # When you have finished calling the first pet.
             if self.shared_group_count[pet_group_id] == 1:
                 self.shared_call_time[pet_group_id] = time.time()
-                print("time time inject")
             self.shared_group_count[pet_group_id] = self.shared_group_count[pet_group_id] + 1
 
     def call_pets(self, g_id):
@@ -177,7 +176,6 @@ class Keylogger:
         print("timetime:{0}".format(str(time.time())))
 
     def on_press(self, key):
-        print(key.char)
         try:
             # Toggle On
             if self.shared_toggle.value == 1:
@@ -197,7 +195,6 @@ class Keylogger:
 
     def on_release(self, key):
         return key
-
 
     def run(self):
         try:
@@ -220,69 +217,72 @@ class UI(QDialog):
 
         super(UI, self).__init__(parent)
         self.originalPalette = QApplication.palette()
+
+        # Mode select
         ModeComboBox = QComboBox()
         ModeComboBox.addItems(MODE.keys())
-        self.message = message
         styleLabel = QLabel("&Mode")
         styleLabel.setBuddy(ModeComboBox)
+        ModeComboBox.textActivated.connect(self.modeChange)
 
+        # Front window select
         self.useStylePaletteCheckBox = QCheckBox("&Front Window")
         self.useStylePaletteCheckBox.setChecked(False)
-
-        self.pet1box = QCheckBox("&Pet 1 Group")
-
-
-        self.disableWidgetsCheckBox = QCheckBox("&Lock")
-
-        # self.createTopLeftGroupBox()
-        # self.createTopRightGroupBox()
-        self.createProgressBar()
-        self.createLogger()
-
-        ModeComboBox.textActivated.connect(self.modeChange)
         self.useStylePaletteCheckBox.toggled.connect(self.changeFrontWindow)
-
-
         topLayout = QHBoxLayout()
         topLayout.addWidget(styleLabel)
         topLayout.addWidget(ModeComboBox)
         topLayout.addStretch(1)
         topLayout.addWidget(self.useStylePaletteCheckBox)
-        topLayout.addWidget(self.disableWidgetsCheckBox)
 
+        self.createLogger()
+
+        # Top Left Group
         self.topLeftGroupBox = QGroupBox("Pet Group")
         self.checkBox1 = QCheckBox("Pet 1 Group")
         self.checkBox2 = QCheckBox("Pet 2 Group")
         self.checkBox3 = QCheckBox("Pet 3 Group")
         self.checkBox4 = QCheckBox("Pet 4 Group")
-        self.checkBox5 = QCheckBox("Don't consider CT")
-        self.checkBox6 = QCheckBox("Check Client")
-        self.checkBox1.setTristate(True)
         self.checkBox1.setChecked(True)
-        self.checkBox2.setTristate(True)
-        self.checkBox3.setTristate(True)
-        self.checkBox4.setTristate(True)
-        self.checkBox5.setTristate(True)
-        self.checkBox6.setTristate(True)
-        layout = QVBoxLayout()
-        layout.addWidget(self.checkBox1)
-        layout.addWidget(self.checkBox2)
-        layout.addWidget(self.checkBox3)
-        layout.addWidget(self.checkBox4)
-        layout.addWidget(self.checkBox5)
-        layout.addWidget(self.checkBox6)
-        layout.addStretch(1)
-        self.topLeftGroupBox.setLayout(layout)
+        self.checkBox2.setChecked(True)
+        self.checkBox3.setChecked(False)
+        self.checkBox4.setChecked(False)
+        self.reload_button = QPushButton("Reload")
+        self.reload_button.setDefault(True)
+        self.pb_1 = QProgressBar()
+        self.pb_1.setRange(0, 10)
+        self.pb_1.setValue(0)
+        self.pb_2 = QProgressBar()
+        self.pb_2.setRange(0, 10)
+        self.pb_2.setValue(0)
+        self.pb_3 = QProgressBar()
+        self.pb_3.setRange(0, 10)
+        self.pb_3.setValue(0)
+        self.pb_4 = QProgressBar()
+        self.pb_4.setRange(0, 10)
+        self.pb_4.setValue(0)
+        top_layout = QHBoxLayout()
+        top_layout.addWidget(self.checkBox1)
+        top_layout.addWidget(self.checkBox2)
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(self.checkBox3)
+        bottom_layout.addWidget(self.checkBox4)
+        # pg_layout = QHBoxLayout()
+        # pg1_layout.addLayout(self.checkBox1)
+        # pg1_layout.addLayout(self.pb_1)
 
+        layout = QVBoxLayout()
+        layout.addLayout(top_layout)
+        layout.addLayout(bottom_layout)
+        layout.addWidget(self.reload_button)
+        self.topLeftGroupBox.setLayout(layout)
 
         self.checkBox1.toggled.connect(self.save_config)
         self.checkBox2.toggled.connect(self.save_config)
         self.checkBox3.toggled.connect(self.save_config)
         self.checkBox4.toggled.connect(self.save_config)
-        self.checkBox5.toggled.connect(self.save_config)
-        self.checkBox6.toggled.connect(self.save_config)
 
-
+        # Top right group
         self.topRightGroupBox = QGroupBox("Config")
         self.pet1group = QLabel("Pet 1 Group loaded:")
         self.pet1count = QLabel("0")
@@ -297,51 +297,23 @@ class UI(QDialog):
         self.defaultPushButton = QPushButton("Reload Config")
         self.defaultPushButton.setDefault(True)
 
-        pet1GroupLayout = QHBoxLayout()
-        pet1GroupLayout.addWidget(self.pet1group)
-        pet1GroupLayout.addWidget(self.pet1count)
-        pet2GroupLayout = QHBoxLayout()
-        pet2GroupLayout.addWidget(self.pet2group)
-        pet2GroupLayout.addWidget(self.pet2count)
-        pet3GroupLayout = QHBoxLayout()
-        pet3GroupLayout.addWidget(self.pet3group)
-        pet3GroupLayout.addWidget(self.pet3count)
-        pet4GroupLayout = QHBoxLayout()
-        pet4GroupLayout.addWidget(self.pet4group)
-        pet4GroupLayout.addWidget(self.pet4count)
-
-        layout = QVBoxLayout()
-        layout.addLayout(pet1GroupLayout)
-        layout.addLayout(pet2GroupLayout)
-        layout.addLayout(pet3GroupLayout)
-        layout.addLayout(pet4GroupLayout)
-        layout.addWidget(self.defaultPushButton)
-        self.topRightGroupBox.setLayout(layout)
-
-
         mainLayout = QGridLayout()
         mainLayout.addLayout(topLayout, 0, 0, 1, 2)
-        mainLayout.addWidget(self.topLeftGroupBox, 1, 0)
-        mainLayout.addWidget(self.topRightGroupBox, 1, 1)
+        mainLayout.addWidget(self.topLeftGroupBox, 1, 0, 1, 2)
         mainLayout.addWidget(self.logger, 2, 0, 1, 2)
-        mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
         mainLayout.setRowStretch(1, 1)
         mainLayout.setRowStretch(2, 1)
         mainLayout.setColumnStretch(0, 1)
         mainLayout.setColumnStretch(1, 1)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle("Pet Launcher ver." + str(VERSION))
+        self.reload_button.clicked.connect(self.load_pet_config)
+
+        # last init
+        self.setWindowTitle("Pet Launcher")
         QApplication.setStyle("WindowsVista")
         self.load_config()
         self.load_pet_config()
-
-        # 操作不可を強制する
-        self.disableWidgetsCheckBox.toggled.connect(self.topLeftGroupBox.setDisabled)
-        self.disableWidgetsCheckBox.toggled.connect(self.topRightGroupBox.setDisabled)
-
-        # ペットをロードする
-        self.defaultPushButton.clicked.connect(self.load_pet_config)
 
     def save_config(self):
         config = configparser.ConfigParser()
@@ -350,8 +322,6 @@ class UI(QDialog):
         config.set("PET_GROUP", "group2", self.bool2str(self.checkBox2.isChecked()))
         config.set("PET_GROUP", "group3", self.bool2str(self.checkBox3.isChecked()))
         config.set("PET_GROUP", "group4", self.bool2str(self.checkBox4.isChecked()))
-        config.set("PET_GROUP", "group5", self.bool2str(self.checkBox5.isChecked()))
-        config.set("PET_GROUP", "group6", self.bool2str(self.checkBox6.isChecked()))
         with open("config.ini", "w") as f:
             config.write(f)
 
@@ -362,19 +332,26 @@ class UI(QDialog):
         self.checkBox2.setChecked(self.str2bool(config.get("PET_GROUP", "group2")))
         self.checkBox3.setChecked(self.str2bool(config.get("PET_GROUP", "group3")))
         self.checkBox4.setChecked(self.str2bool(config.get("PET_GROUP", "group4")))
-        self.checkBox5.setChecked(self.str2bool(config.get("PET_GROUP", "group5")))
-        self.checkBox6.setChecked(self.str2bool(config.get("PET_GROUP", "group6")))
         self.send_logger("Auto loaded: " + "config.ini")
 
     def load_pet_config(self):
         config = configparser.SafeConfigParser()
-
         config.read(os.path.join(CWD_PATH, "petgroup.ini"))
         config.sections()
-        self.pet1count.setText(str(len(config["PET_1_GROUP"])))
-        self.pet2count.setText(str(len(config["PET_2_GROUP"])))
-        self.pet3count.setText(str(len(config["PET_3_GROUP"])))
-        self.pet4count.setText(str(len(config["PET_4_GROUP"])))
+        key_config = configparser.SafeConfigParser()
+        key_config.read(os.path.join(CWD_PATH, "config.ini"))
+        key_config.sections()
+        self.checkBox1.setText("{0} ({1})".format(str(config["GROUP_NAME"]["GROUP1"]),
+                                                  str(len(config["PET_1_GROUP"]))
+                                                  ))
+        self.checkBox2.setText("{0} ({1})".format(str(config["GROUP_NAME"]["GROUP2"]),
+                                                  str(len(config["PET_2_GROUP"]))))
+        self.checkBox3.setText("{0} ({1})".format(str(config["GROUP_NAME"]["GROUP3"]),
+                                                  str(len(config["PET_3_GROUP"]))
+                                                  ))
+        self.checkBox4.setText("{0} ({1})".format(str(config["GROUP_NAME"]["GROUP4"]),
+                                                      str(len(config["PET_4_GROUP"])),
+                                                  ))
         self.send_logger("Loaded: " + "petgroup.ini")
 
     def str2bool(self, s):
@@ -394,12 +371,10 @@ class UI(QDialog):
             self.shared_toggle.value = 1
             self.lock_group()
             self.send_logger("Battle Mode is Activated.")
-            print(self.shared_toggle.value)
         elif modeName == "Inactivate":
             self.shared_toggle.value = 0
             self.unlock_group()
             self.send_logger("Battle Mode is Inactivated.")
-            print(self.shared_toggle.value)
 
     def lock_group(self):
         self.topLeftGroupBox.setDisabled(True)
@@ -427,32 +402,18 @@ class UI(QDialog):
     def keylogger_finished(self):
         del self.init_keylogger
 
-
-    def advanceProgressBar(self):
-        curVal = self.progressBar.value()
-        maxVal = self.progressBar.maximum()
-        self.pop_message()
-        self.progressBar.setValue(curVal + (maxVal - curVal) // 100)
-
     def pop_message(self):
         message_temp = copy.deepcopy(self.message)
         del self.message[:len(message_temp)]
         for m in message_temp:
             self.send_logger(str(m))
 
-
-    def createProgressBar(self):
-        self.progressBar = QProgressBar()
-        self.progressBar.setRange(0, 10000)
-        self.progressBar.setValue(0)
-
-        timer = QTimer(self)
-        timer.timeout.connect(self.advanceProgressBar)
-        timer.start(1000)
-
     def createLogger(self):
+        timer = QTimer(self)
         self.logger = QPlainTextEdit()
         self.logger.setReadOnly(True)
+        timer.timeout.connect(self.pop_message)
+        timer.start(1000)
         self.logger.insertPlainText("Welcome.\n")
 
 

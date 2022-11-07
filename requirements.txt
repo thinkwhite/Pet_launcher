@@ -3,3 +3,4 @@ PyQt6
 pynput
 pydirectinput
 psutil
+toggle
